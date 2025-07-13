@@ -1,0 +1,37 @@
+# 서버 설정
+server:
+  port: 8080
+
+# 카카오 API 설정
+kakao:
+  rest:
+    api:
+      key: ${KAKAO_REST_API_KEY}
+  javascript:
+    key: ${KAKAO_JAVASCRIPT_KEY}
+
+python:
+  path:
+    base: ${python.base}
+    restaurant: ${python.restaurant}
+
+# 스프링 설정
+spring:
+  # Thymeleaf 설정 (HTML 템플릿용)
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates/
+    suffix: .html
+  
+  # 정적 리소스 설정
+  web:
+    resources:
+      static-locations: classpath:/static/
+
+# 로깅 설정
+logging:
+  level:
+    root: INFO
+    com.restaurant: DEBUG
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"

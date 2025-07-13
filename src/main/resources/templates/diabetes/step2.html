@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{front/layouts/main}">
+
+<main layout:fragment="content">
+    <h1 th:text="${pageTitle}"></h1>
+    <form name="frmStep" method="POST" th:action="@{/survey/diabetes/process}" autocomplete="off" th:object="${requestDiabetesSurvey}">
+        <input type="hidden" name="mode" value="step2">
+        <div class="error global" th:each="err : ${#fields.globalErrors()}" th:text="${err}"></div>
+        <dl>
+            <dt>키/몸무게</dt>
+            <dd>
+                <input type="text" name="height" th:field="*{height}" min="50" max="350">cm
+                /
+                <input type="text" name="weight" th:field="*{weight}" min="10" max="450">kg
+
+                <div class="error" th:each="err : ${#fields.errors('height')}" th:text="${err}"></div>
+                <div class="error" th:each="err : ${#fields.errors('weight')}" th:text="${err}"></div>
+            </dd>
+        </dl>
+        <dl>
+            <dt>당화혈색소_수치</dt>
+            <dd>
+                <input type="text" name="hbA1c" th:field="*{hbA1c}">%
+                <div class="error" th:each="err : ${#fields.errors('hbA1c')}" th:text="${err}"></div>
+            </dd>
+        </dl>
+        <dl>
+            <dt>혈당 수치</dt>
+            <dd>
+                <input type="text" name="bloodGlucoseLevel" th:field="*{bloodGlucoseLevel}">mg/dL
+                <div class="error" th:each="err : ${#fields.errors('bloodGlucoseLevel')}" th:text="${err}"></div>
+            </dd>
+        </dl>
+        <div class="button-group">
+            <a th:href="@{/survey/diabetes/step1}" th:text="#{이전_페이지}" class="btn"></a>
+            <button type="submit" th:text="#{결과보기}" class="btn"></button>
+        </div>
+    </form>
+</main>
+</html>

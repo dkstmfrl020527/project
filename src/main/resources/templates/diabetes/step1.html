@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>당뇨 고위험군 테스트</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .form-group { margin: 20px 0; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input, select { padding: 8px; margin: 5px; }
+        button { background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 5px; }
+    </style>
+</head>
+<body>
+<h1>당뇨 고위험군 테스트</h1>
+
+<form action="/survey/diabetes/step2" method="post">
+    <div class="form-group">
+        <label>성별</label>
+        <input type="radio" name="gender" value="FEMALE" checked> 여성
+        <input type="radio" name="gender" value="MALE"> 남성
+        <input type="radio" name="gender" value="OTHER"> 기타
+    </div>
+
+    <div class="form-group">
+        <label>나이</label>
+        <input type="number" name="age" value="25" min="5" max="130">
+    </div>
+
+    <div class="form-group">
+        <label>고혈압 여부</label>
+        <input type="radio" name="hypertension" value="false" checked> 없음
+        <input type="radio" name="hypertension" value="true"> 있음
+    </div>
+
+    <div class="form-group">
+        <label>심장질환 여부</label>
+        <input type="radio" name="heartDisease" value="false" checked> 없음
+        <input type="radio" name="heartDisease" value="true"> 있음
+    </div>
+
+    <div class="form-group">
+        <label>흡연 여부</label>
+        <select name="smokingHistory">
+            <option value="NEVER">흡연한적 없음</option>
+            <option value="CURRENT">현재 흡연중</option>
+            <option value="EVER">오랜기간 흡연중</option>
+            <option value="FORMER">금연중</option>
+            <option value="NOT_CURRENT">흡연 예상</option>
+        </select>
+    </div>
+
+    <button type="submit">다음 단계</button>
+</form>
+</body>
+</html>

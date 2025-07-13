@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>카카오 맛집 추천</title>
+    <script type="text/javascript" th:src="'//dapi.kakao.com/v2/maps/sdk.js?appkey=' + ${kakaoJsKey}"></script>
+    <style>
+        body { margin: 0; font-family: Arial, sans-serif; }
+        .container { display: flex; height: 100vh; }
+        .sidebar { width: 300px; padding: 20px; background: #f5f5f5; overflow-y: auto; }
+        .map-container { flex: 1; }
+        #map { width: 100%; height: 100%; }
+        .restaurant-item {
+            padding: 10px; margin: 5px 0; background: white;
+            border-radius: 5px; cursor: pointer; border: 1px solid #ddd;
+        }
+        .restaurant-item:hover { background: #e9ecef; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="sidebar">
+        <h2>🍽️ 주변 맛집</h2>
+        <p>지도를 클릭하면 주변 맛집이 표시됩니다!</p>
+        <div id="restaurantList"></div>
+    </div>
+    <div class="map-container">
+        <div id="map"></div>
+    </div>
+</div>
+
+<script>
+    let map;
+    let markers = [];
+
+    // 지도 초기화
+    const container = document.getElementById('map');
+    const options = {
+        center: new kakao.maps.LatLng(37.5665, 126.9780),
+        level: 3
+    };
+    map = new kakao.maps.Map(container, options);
+
+    // 지도 클릭 이벤트
+    kakao.maps.event.addListener(map, 'click', function(mouseEvent) {
+        const latlng = mouseEvent.latLng;
+        const lat = latlng.getLat();
+        const lon = latlng.getLng();
+
+        console.log('클릭 위치:', lat, lon);
+        searchNearbyRestaurants(lat, lon);
+    });
+
+    // 주변 식당 검색
+    async function searchNearbyRestaurants(lat, lon) {
+        try {
+            const response = await fetch(`/api/recommend?lat=${lat}&lon=${lon}&radius=1000`);
+            const restaurants = await response.json();
+
+            console.log('받은 식당들:', restaurants);
+            displayRestaurants(restaurants);
+            displayMarkers(restaurants);
+
+        } catch (error) {
+            console.error('오류:', error);
+            document.getElementById('restaurantList').innerHTML =
+                '<p style="color: red;">식당 정보를 가져올 수 없습니다.</p>';
+        }
+    }
+
+    // 식당 목록 표시
+    function displayRestaurants(restaurants) {
+        const container = document.getElementById('restaurantList');
+
+        if (!restaurants || restaurants.length === 0) {
+            container.innerHTML = '<p>주변에 식당이 없습니다.</p>';
+            return;
+        }
+
+        container.innerHTML = restaurants.map(restaurant => `
+            <div class="restaurant-item" onclick="moveToRestaurant(${restaurant.lat}, ${restaurant.lon})">
+                <h4 style="margin: 0 0 5px 0;">${restaurant.name}</h4>
+                <p style="margin: 0; font-size: 12px; color: #666;">${restaurant.category}</p>
+                <p style="margin: 5px 0 0 0; font-size: 12px;">${restaurant.distance}m</p>
+            </div>
+        `).join('');
+    }
+
+    // 식당으로 지도 이동
+    function moveToRestaurant(lat, lon) {
+        const moveLatLon = new kakao.maps.LatLng(lat, lon);
+        map.setCenter(moveLatLon);
+        map.setLevel(2); // 줌 인
+    }
+
+    // 지도에 마커 표시
+    function displayMarkers(restaurants) {
+        // 기존 마커 제거
+        markers.forEach(marker => marker.setMap(null));
+        markers = [];
+
+        restaurants.forEach(restaurant => {
+            const position = new kakao.maps.LatLng(restaurant.lat, restaurant.lon);
+            const marker = new kakao.maps.Marker({
+                position: position,
+                map: map
+            });
+
+            const infowindow = new kakao.maps.InfoWindow({
+                content: `<div style="padding:10px;">${restaurant.name}</div>`
+            });
+
+            kakao.maps.event.addListener(marker, 'click', function() {
+                infowindow.open(map, marker);
+            });
+
+            markers.push(marker);
+        });
+    }
+
+    console.log('맛집 추천 시스템 준비 완료! 지도를 클릭해보세요!');
+</script>
+</body>
+</html>
